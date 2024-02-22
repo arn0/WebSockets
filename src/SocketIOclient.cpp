@@ -5,6 +5,8 @@
  *      Author: links
  */
 
+#include "esp_timer.h"
+
 #include "WebSockets.h"
 #include "WebSocketsClient.h"
 #include "SocketIOclient.h"
@@ -173,7 +175,7 @@ bool SocketIOclient::sendEVENT(String & payload) {
 
 void SocketIOclient::loop(void) {
     WebSocketsClient::loop();
-    unsigned long t = millis();
+    unsigned long t = esp_timer_get_time() / 1000ULL;
     if(!_disableHeartbeat && (t - _lastHeartbeat) > EIO_HEARTBEAT_INTERVAL) {
         _lastHeartbeat = t;
         DEBUG_WEBSOCKETS("[wsIOc] send ping\n");

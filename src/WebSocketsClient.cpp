@@ -22,6 +22,8 @@
  *
  */
 
+#include "esp_timer.h"
+
 #include "WebSockets.h"
 #include "WebSocketsClient.h"
 
@@ -206,7 +208,7 @@ void WebSocketsClient::loop(void) {
     WEBSOCKETS_YIELD();
     if(!clientIsConnected(&_client)) {
         // do not flood the server
-        if((millis() - _lastConnectionFail) < _reconnectInterval) {
+        if(((esp_timer_get_time() / 1000ULL) - _lastConnectionFail) < _reconnectInterval) {
             return;
         }
 
@@ -361,7 +363,7 @@ bool WebSocketsClient::sendPing(uint8_t * payload, size_t length) {
     if(clientIsConnected(&_client)) {
         bool sent = sendFrame(&_client, WSop_ping, payload, length);
         if(sent)
-            _client.lastPing = millis();
+            _client.lastPing = esp_timer_get_time() / 1000ULL;
         return sent;
     }
     return false;
@@ -677,7 +679,7 @@ void WebSocketsClient::sendHeader(WSclient_t * client) {
 #endif
 
     DEBUG_WEBSOCKETS("[WS-Client][sendHeader] sending header... Done (%luus).\n", (micros() - start));
-    _lastHeaderSent = millis();
+    _lastHeaderSent = esp_timer_get_time() / 1000ULL;
 }
 
 /**
@@ -833,7 +835,7 @@ void WebSocketsClient::handleHeader(WSclient_t * client, String * headerLine) {
 #endif
         } else {
             DEBUG_WEBSOCKETS("[WS-Client][handleHeader] no Websocket connection close.\n");
-            _lastConnectionFail = millis();
+            _lastConnectionFail = esp_timer_get_time() / 1000ULL;
             if(clientIsConnected(client)) {
                 write(client, "This is a webSocket client!");
             }

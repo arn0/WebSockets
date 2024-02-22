@@ -188,7 +188,7 @@
 #define WEBSOCKETS_NETWORK_CLASS TCPClient
 #define WEBSOCKETS_NETWORK_SERVER_CLASS TCPServer
 #else
-#include <Ethernet.h>
+#include <Eth.h>
 #include <SPI.h>
 #define WEBSOCKETS_NETWORK_CLASS EthernetClient
 #define WEBSOCKETS_NETWORK_SERVER_CLASS EthernetServer
